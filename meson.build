@@ -1442,9 +1442,6 @@ endif
 ios_gl = cc.has_header_symbol('OpenGLES/ES3/glext.h', 'GL_RGB32F', required:
     get_option('ios-gl').require(darwin))
 features += {'ios-gl': ios_gl}
-if features['ios-gl']
-    sources += files('video/out/hwdec/hwdec_ios_gl.m')
-endif
 
 libva = dependency('libva', version: '>= 1.1.0', required: get_option('vaapi'))
 
@@ -1530,7 +1527,9 @@ features += {'videotoolbox-pl': videotoolbox_pl.allowed()}
 if features['videotoolbox-gl'] or features['videotoolbox-pl'] or features['ios-gl']
     sources += files('video/out/hwdec/hwdec_vt.c')
 endif
-if features['videotoolbox-gl']
+if features['ios-gl']
+    sources += files('video/out/hwdec/hwdec_ios_gl.m')
+elif features['videotoolbox-gl']
     sources += files('video/out/hwdec/hwdec_mac_gl.c')
 endif
 if features['videotoolbox-pl']

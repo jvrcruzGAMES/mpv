@@ -42,11 +42,11 @@ struct priv {
 
     CVPixelBufferRef pbuf;
 
-#if HAVE_VIDEOTOOLBOX_GL
-    GLuint gl_planes[MP_MAX_PLANES];
-#elif HAVE_IOS_GL
+#if HAVE_IOS_GL
     CVOpenGLESTextureCacheRef gl_texture_cache;
     CVOpenGLESTextureRef gl_planes[MP_MAX_PLANES];
+#elif HAVE_VIDEOTOOLBOX_GL
+    GLuint gl_planes[MP_MAX_PLANES];
 #endif
 
 #if HAVE_VIDEOTOOLBOX_PL
