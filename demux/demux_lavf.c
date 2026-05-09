@@ -167,6 +167,7 @@ static const struct format_hack format_hacks[] = {
     {"mp3", NULL,         24, .max_probe = true},
 
     {"hls", .no_stream = true, .clear_filepos = true, .no_ext_picky = true},
+    {"jstrm", .no_stream = true, .clear_filepos = true, .no_ext_picky = true},
     {"dash", .no_stream = true, .clear_filepos = true},
     {"sdp", .clear_filepos = true, .is_network = true, .no_seek = true},
     {"mpeg", .use_stream_ids = true},
@@ -461,12 +462,14 @@ static int lavf_check_file(demuxer_t *demuxer, enum demux_check check)
         }
     }
 
-    // HLS streams seems to be not well tagged, so matching mime type is not
-    // enough. Strip URL parameters and match extension.
+    // HLS/JSTRM streams can require extension-aware probing, so matching mime
+    // type is not enough. Strip URL parameters and match extension.
     bstr ext = bstr_get_ext(bstr_split(bstr0(priv->filename), "?#", NULL));
     AVProbeData avpd = {
-        // Disable file-extension matching with normal checks, except for HLS
+        // Disable file-extension matching with normal checks, except for
+        // extension-sensitive playlist formats like HLS/JSTRM.
         .filename = !bstrcasecmp0(ext, "m3u8") || !bstrcasecmp0(ext, "m3u") ||
+                    !bstrcasecmp0(ext, "jstrm") ||
                     check <= DEMUX_CHECK_REQUEST ? priv->filename : "",
         .buf_size = 0,
         .buf = av_mallocz(PROBE_BUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE),
